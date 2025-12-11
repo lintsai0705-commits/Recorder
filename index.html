@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>養健康的電腦使用習慣紀錄表</title>
+  <style>
+    body {
+      font-family: "Noto Sans TC", sans-serif;
+      background-color: #f5f9ff;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #2a5d9f;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: #fff;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #e3efff;
+    }
+    .btn {
+      background-color: #2a5d9f;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 15px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .btn:hover {
+      background-color: #1f4a7a;
+    }
+    .total {
+      font-weight: bold;
+      color: #2a5d9f;
+    }
+  </style>
+</head>
+<body>
+  <h1>養健康的電腦使用習慣紀錄表</h1>
+  <p style="text-align:center;">每日勾選電腦使用時間與用藥情況，系統自動加總分數。</p>
+
+  <table id="recordTable">
+    <tr>
+      <th>日期</th>
+      <th>電腦使用時間</th>
+      <th>用藥情況</th>
+      <th>每日總分</th>
+    </tr>
+    <tr>
+      <td><input type="date"></td>
+      <td>
+        <label><input type="radio" name="time1" value="5"> 30分鐘以下 (+5)</label><br>
+        <label><input type="radio" name="time1" value="3"> 30–60分鐘 (+3)</label><br>
+        <label><input type="radio" name="time1" value="1"> 60–90分鐘 (+1)</label><br>
+        <label><input type="radio" name="time1" value="-2"> 超過90分鐘 (–2)</label>
+      </td>
+      <td>
+        <label><input type="radio" name="med1" value="5"> 自主用藥 (+5)</label><br>
+        <label><input type="radio" name="med1" value="3"> 提醒後用藥 (+3)</label><br>
+        <label><input type="radio" name="med1" value="-2"> 未用藥 (–2)</label>
+      </td>
+      <td class="total">0</td>
+    </tr>
+  </table>
+
+  <button class="btn" onclick="addRow()">新增一天</button>
+  <button class="btn" onclick="calculateTotal()">計算總分</button>
+
+  <h2>🎁 點數兌換區</h2>
+  <table>
+    <tr><th>兌換項目</th><th>所需點數</th></tr>
+    <tr><td>喜愛活動一次</td><td>50</td></tr>
+    <tr><td>小禮物</td><td>100</td></tr>
+    <tr><td>特別獎勵</td><td>200</td></tr>
+  </table>
+
+  <h2>目前累積總分：<span id="grandTotal">0</span> 分</h2>
+
+  <script>
+    function addRow() {
+      const table = document.getElementById("recordTable");
+      const rowCount = table.rows.length;
+      const row = table.insertRow(rowCount);
+      const dateCell = row.insertCell(0);
+      const timeCell = row.insertCell(1);
+      const medCell = row.insertCell(2);
+      const totalCell = row.insertCell(3);
+      const index = rowCount - 1;
+
+      dateCell.innerHTML = '<input type="date">';
+      timeCell.innerHTML = `
+        <label><input type="radio" name="time${index}" value="5"> 30分鐘以下 (+5)</label><br>
+        <label><input type="radio" name="time${index}" value="3"> 30–60分鐘 (+3)</label><br>
+        <label><input type="radio" name="time${index}" value="1"> 60–90分鐘 (+1)</label><br>
+        <label><input type="radio" name="time${index}" value="-2"> 超過90分鐘 (–2)</label>`;
+      medCell.innerHTML = `
+        <label><input type="radio" name="med${index}" value="5"> 自主用藥 (+5)</label><br>
+        <label><input type="radio" name="med${index}" value="3"> 提醒後用藥 (+3)</label><br>
+        <label><input type="radio" name="med${index}" value="-2"> 未用藥 (–2)</label>`;
+      totalCell.classList.add("total");
+      totalCell.textContent = "0";
+    }
+
+    function calculateTotal() {
+      const rows = document.querySelectorAll("#recordTable tr");
+      let grandTotal = 0;
+      for (let i = 1; i < rows.length; i++) {
+        const time = rows[i].querySelector(`input[name="time${i}"]:checked`);
+        const med = rows[i].querySelector(`input[name="med${i}"]:checked`);
+        const totalCell = rows[i].querySelector(".total");
+        let dailyTotal = 0;
+        if (time) dailyTotal += parseInt(time.value);
+        if (med) dailyTotal += parseInt(med.value);
+        totalCell.textContent = dailyTotal;
+        grandTotal += dailyTotal;
+      }
+      document.getElementById("grandTotal").textContent = grandTotal;
+    }
+  </script>
+</body>
+</html>
